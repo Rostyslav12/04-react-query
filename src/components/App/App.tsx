@@ -1,6 +1,8 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { keepPreviousData } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import {
+  keepPreviousData,
+  useQuery,
+} from "@tanstack/react-query";
 import ReactPaginateModule from "react-paginate";
 import type { ReactPaginateProps } from "react-paginate";
 import type { ComponentType } from "react";
@@ -62,9 +64,11 @@ export default function App() {
     setPage(selected + 1);
   };
 
-  if (isSuccess && movies.length === 0 && !isFetching) {
-    toast.error("No movies found.");
-  }
+  useEffect(() => {
+    if (isSuccess && !isFetching && movies.length === 0) {
+      toast.error("No movies found.");
+    }
+  }, [isSuccess, movies.length, isFetching]);
 
   return (
     <div className={styles.app}>
@@ -76,9 +80,7 @@ export default function App() {
         <ErrorMessage message="Failed to load movies. Please try again." />
       )}
 
-      {isFetching && !isLoading && (
-        <Loader />
-      )}
+      {isFetching && !isLoading && <Loader />}
 
       {!isError && movies.length > 0 && (
         <>
