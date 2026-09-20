@@ -1,0 +1,66 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background-color: rgb(0 0 0 / 70%);
+}
+
+.modal {
+  position: relative;
+  display: flex;
+  width: min(900px, 100%);
+  max-height: 90vh;
+  overflow: auto;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background-color: rgb(0 0 0 / 70%);
+  color: #fff;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.image {
+  width: 300px;
+  max-height: 450px;
+  object-fit: cover;
+}
+
+.content {
+  padding: 32px;
+}
+
+.title {
+  margin-top: 0;
+  font-size: 28px;
+}
+
+.overview {
+  line-height: 1.6;
+}
+
+@media (max-width: 700px) {
+  .modal {
+    flex-direction: column;
+  }
+
+  .image {
+    width: 100%;
+    max-height: 400px;
+  }
+}
