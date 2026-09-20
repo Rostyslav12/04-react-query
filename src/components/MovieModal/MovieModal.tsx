@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { createPortal } from "react-dom";
 import type { Movie } from "../../types/movie";
 import styles from "./MovieModal.module.css";
 
@@ -10,6 +12,20 @@ export default function MovieModal({
   movie,
   onClose,
 }: MovieModalProps) {
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onClose]);
+
   const handleBackdropClick = (
     event: React.MouseEvent<HTMLDivElement>,
   ) => {
@@ -18,7 +34,7 @@ export default function MovieModal({
     }
   };
 
-  return (
+  return createPortal(
     <div
       className={styles.backdrop}
       onClick={handleBackdropClick}
@@ -33,10 +49,10 @@ export default function MovieModal({
           ×
         </button>
 
-        {movie.poster_path && (
+        {movie.backdrop_path && (
           <img
             className={styles.image}
-            src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+            src={`https://image.tmdb.org/t/p/w1280${movie.backdrop_path}`}
             alt={movie.title}
           />
         )}
@@ -61,6 +77,7 @@ export default function MovieModal({
           </p>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

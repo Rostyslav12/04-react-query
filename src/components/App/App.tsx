@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData } from "@tanstack/react-query";
 import ReactPaginateModule from "react-paginate";
 import type { ReactPaginateProps } from "react-paginate";
 import type { ComponentType } from "react";
+import toast from "react-hot-toast";
 
 import { fetchMovies } from "../../services/movieService";
 import type { Movie } from "../../types/movie";
@@ -34,12 +36,18 @@ export default function App() {
   const {
     data,
     isLoading,
+    isFetching,
     isError,
+    isSuccess,
   } = useQuery({
     queryKey: ["movies", query, page],
     queryFn: () => fetchMovies(query, page),
     enabled: Boolean(query),
+    placeholderData: keepPreviousData,
   });
+
+  const movies = data?.results ?? [];
+  const totalPages = data?.total_pages ?? 0;
 
   const handleSearch = (newQuery: string) => {
     setQuery(newQuery);
@@ -54,8 +62,9 @@ export default function App() {
     setPage(selected + 1);
   };
 
-  const movies = data?.results ?? [];
-  const totalPages = data?.total_pages ?? 0;
+  if (isSuccess && movies.length === 0 && !isFetching) {
+    toast.error("No movies found.");
+  }
 
   return (
     <div className={styles.app}>
@@ -67,7 +76,11 @@ export default function App() {
         <ErrorMessage message="Failed to load movies. Please try again." />
       )}
 
-      {!isLoading && !isError && movies.length > 0 && (
+      {isFetching && !isLoading && (
+        <Loader />
+      )}
+
+      {!isError && movies.length > 0 && (
         <>
           <MovieGrid
             movies={movies}
@@ -89,15 +102,6 @@ export default function App() {
           )}
         </>
       )}
-
-      {!isLoading &&
-        !isError &&
-        query &&
-        movies.length === 0 && (
-          <p className={styles.noResults}>
-            No movies found.
-          </p>
-        )}
 
       {selectedMovie && (
         <MovieModal
